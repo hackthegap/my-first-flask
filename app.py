@@ -1,26 +1,27 @@
-from flask import Flask, jsonify
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-@app.route("/") # root url
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return "<h1>Weolcome to our first awesome Flask application!</h1><p>Home Page</p>" 
+    if request.method == "POST":
+        name = request.form.get("name")
+        amount = float(request.form.get("amount"))
+        result = amount * 1.1  # just an example (like +10%)
+        return render_template("result.html", name=name, result=result)
+    return render_template("home.html")
 
-@app.route("/api/status")
-def status():
-    return jsonify ({
-            "status" : "OK",
-            "message" : "Server running",
-            "version" : "1.0"
-        }
-    )
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        # You can extract and print or process registration data here
+        full_name = request.form.get("full_name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        print(f"Registered: {full_name}, {email}")
+        return "Registration submitted!"  # Simple response
+    return render_template("register.html")
 
-@app.route("/parameters/sum/<int:x>/<int:y>") # handling parameters
-def sum(x, y):
-    return jsonify ({
-            "result" : x + y,
-        }
-    )
 
 if __name__ == "__main__":
     app.run(debug=True)
